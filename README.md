@@ -73,7 +73,7 @@ Preencha o `.env` com os dados do ambiente. Para SQL Server, os campos principai
 
 ```dotenv
 DB_PROVIDER=sqlserver
-SQLSERVER_HOST=192.168.176.19
+SQLSERVER_HOST=000.000.000.000
 SQLSERVER_PORT=1433
 SQLSERVER_DATABASE=Senhas
 SQLSERVER_USER=usuario_sql
