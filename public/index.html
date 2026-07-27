@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gerenciador de Senhas do Setor</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div id="toast" class="toast" aria-live="polite"></div>
+
+    <main>
+      <section id="setup-screen" class="auth-shell hidden">
+        <form id="setup-form" class="auth-panel">
+          <p class="eyebrow">Primeiro acesso</p>
+          <h1>Gerenciador de Senhas do Setor</h1>
+          <label>
+            Nome
+            <input name="name" autocomplete="name" minlength="2" maxlength="80" required>
+          </label>
+          <label>
+            Usuario
+            <input name="username" autocomplete="username" minlength="7" maxlength="40" pattern="[A-Za-z0-9._-]+" spellcheck="false" required>
+          </label>
+          <label>
+            Senha
+            <input name="password" type="password" autocomplete="new-password" minlength="8" required>
+          </label>
+          <label>
+            Codigo de instalacao
+            <input name="setupToken" type="password" autocomplete="off" minlength="16" required>
+          </label>
+          <button class="primary-button" type="submit">Criar administrador</button>
+        </form>
+      </section>
+
+      <section id="login-screen" class="auth-shell hidden">
+        <form id="login-form" class="auth-panel">
+          <p class="eyebrow">Acesso interno</p>
+          <h1>Gerenciador de Senhas do Setor</h1>
+          <label>
+            Usuario
+            <input name="username" autocomplete="username" minlength="7" maxlength="40" pattern="[A-Za-z0-9._-]+" spellcheck="false" required>
+          </label>
+          <label>
+            Senha
+            <input name="password" type="password" autocomplete="current-password" required>
+          </label>
+          <button class="primary-button" type="submit">Entrar</button>
+        </form>
+      </section>
+
+      <section id="app-screen" class="app-shell hidden">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Setor</p>
+            <h1>Cofre de Senhas</h1>
+          </div>
+          <div class="top-actions">
+            <span id="user-chip" class="user-chip"></span>
+            <button id="logout-button" class="secondary-button" type="button">Sair</button>
+          </div>
+        </header>
+
+        <nav class="tabs" aria-label="Navegacao principal">
+          <button class="tab active" data-tab="vault" type="button">Senhas</button>
+          <button id="users-tab" class="tab hidden" data-tab="users" type="button">Usuarios</button>
+          <button id="audit-tab" class="tab hidden" data-tab="audit" type="button">Auditoria</button>
+        </nav>
+
+        <section id="vault-view" class="view">
+          <div class="toolbar">
+            <label class="search-box">
+              <span>Buscar</span>
+              <input id="search-input" type="search" autocomplete="off">
+            </label>
+            <button id="new-entry-button" class="primary-button" type="button">Nova senha</button>
+          </div>
+
+          <div class="metrics">
+            <div>
+              <span id="entry-count" class="metric-value">0</span>
+              <span class="metric-label">senhas</span>
+            </div>
+            <div>
+              <span id="category-count" class="metric-value">0</span>
+              <span class="metric-label">categorias</span>
+            </div>
+          </div>
+
+          <div id="entries-grid" class="entries-grid"></div>
+        </section>
+
+        <section id="users-view" class="view hidden">
+          <div class="split-layout">
+            <form id="user-form" class="form-panel">
+              <h2>Novo usuario</h2>
+              <label>
+                Nome
+                <input name="name" minlength="2" maxlength="80" required>
+              </label>
+              <label>
+                Usuario
+                <input name="username" minlength="7" maxlength="40" pattern="[A-Za-z0-9._-]+" spellcheck="false" required>
+              </label>
+              <label>
+                Senha
+                <input name="password" type="password" minlength="8" required>
+              </label>
+              <label>
+                Perfil
+                <select name="role">
+                  <option value="user">Usuario</option>
+                  <option value="admin">Administrador</option>
+                </select>
+              </label>
+              <button class="primary-button" type="submit">Criar usuario</button>
+            </form>
+
+            <div class="table-panel">
+              <h2>Usuarios</h2>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>Usuario</th>
+                      <th>Perfil</th>
+                      <th>Status</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="users-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="audit-view" class="view hidden">
+          <div class="table-panel">
+            <h2>Auditoria</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Usuario</th>
+                    <th>Acao</th>
+                    <th>Resumo</th>
+                  </tr>
+                </thead>
+                <tbody id="audit-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="entry-dialog">
+      <form id="entry-form" method="dialog" class="dialog-panel">
+        <div class="dialog-heading">
+          <h2 id="entry-dialog-title">Nova senha</h2>
+          <button id="close-entry-dialog" class="ghost-button" type="button">Fechar</button>
+        </div>
+        <label>
+          Titulo
+          <input id="entry-title" name="title" maxlength="120" required>
+        </label>
+        <label>
+          Login
+          <input id="entry-login" name="login" maxlength="180" autocomplete="off">
+        </label>
+        <label>
+          Senha
+          <div class="password-row">
+            <input id="entry-password" name="password" type="password" maxlength="4096" autocomplete="off" required>
+            <button id="toggle-entry-password" class="secondary-button compact" type="button">Ver</button>
+          </div>
+        </label>
+        <div class="button-row">
+          <button id="generate-password" class="secondary-button" type="button">Gerar senha</button>
+        </div>
+        <label>
+          URL
+          <input id="entry-url" name="url" type="url" maxlength="300" autocomplete="off">
+        </label>
+        <label>
+          Categoria
+          <input id="entry-category" name="category" maxlength="80" autocomplete="off">
+        </label>
+        <label>
+          Notas
+          <textarea id="entry-notes" name="notes" maxlength="2000" rows="4"></textarea>
+        </label>
+        <div class="dialog-actions">
+          <button class="secondary-button" value="cancel" type="button" id="cancel-entry">Cancelar</button>
+          <button class="primary-button" value="default" type="submit">Salvar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="/app.js?v=20260603-setup-token" defer></script>
+  </body>
+</html>
